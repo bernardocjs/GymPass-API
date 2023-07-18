@@ -1,13 +1,19 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { RegisterUseCase } from '../use-cases/register';
 import { compare } from 'bcryptjs';
 import { InMemoryUsersRepository } from '../repositories/in-memory/in-memory-users-repository';
 import { UserAlreadyExistsError } from '../use-cases/errors/user-already-exists-error';
 
+let usersRepository: InMemoryUsersRepository;
+let registerUseCase: RegisterUseCase;
 describe('Register Use Case', () => {
+  beforeEach(() => {
+    usersRepository = new InMemoryUsersRepository();
+    registerUseCase = new RegisterUseCase(usersRepository);
+
+  });
+
   it('should be able to register', async () => {
-    const usersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(usersRepository);
 
     const { user } = await registerUseCase.execute({
       name: 'John Doe',
@@ -19,9 +25,7 @@ describe('Register Use Case', () => {
   });
 
   it('should hash password upon registration', async () => {
-    const usersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(usersRepository);
- 
+
     const { user } = await registerUseCase.execute({
       name: 'John Doe',
       email: 'john.doe@example.com',
@@ -36,8 +40,6 @@ describe('Register Use Case', () => {
   });
 
   it('should not allow two users with the same email', async () => {
-    const usersRepository = new InMemoryUsersRepository();
-    const registerUseCase = new RegisterUseCase(usersRepository);
 
     await registerUseCase.execute({
       name: 'John Doe',
