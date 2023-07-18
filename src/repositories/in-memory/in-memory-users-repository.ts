@@ -1,5 +1,6 @@
 import { Prisma, User } from '@prisma/client';
 import { UsersRepository } from '../users-repository';
+import { GetResult } from '@prisma/client/runtime';
 
 export class InMemoryUsersRepository implements UsersRepository {
   public items: User[] = [];
@@ -9,7 +10,7 @@ export class InMemoryUsersRepository implements UsersRepository {
       name: data.name,
       email: data.email,
       password_hash: data.password_hash,
-      created_at: new Date()
+      created_at: new Date(),
     };
 
     this.items.push(user);
@@ -18,10 +19,17 @@ export class InMemoryUsersRepository implements UsersRepository {
   }
 
   async findByEmail(email: string) {
-    const user = this.items.find(item => item.email === email) as User;
-    
-    if(!user)
-      return null;
+    const user = this.items.find((item) => item.email === email) as User;
+
+    if (!user) return null;
+
+    return user;
+  }
+
+  async findById(id: string){
+    const user = this.items.find((item) => item.id === id) as User;
+
+    if (!user) return null;
 
     return user;
   }
