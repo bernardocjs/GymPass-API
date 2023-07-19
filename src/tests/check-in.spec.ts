@@ -30,18 +30,37 @@ describe('CheckIn Use Case', () => {
     expect(checkIn.id).toEqual(expect.any(String));
   });
 
+  it('should be able to check in twice but in different days', async () => {
+      
+    vi.setSystemTime(new Date(2022,1, 20, 9, 0, 0));
+  
+    await sut.execute({
+      gymId: randomUUID(),
+      userId: '1234'
+    });
+
+    vi.setSystemTime(new Date(2022,1, 21, 9, 0, 0));
+  
+    const {checkIn} = await sut.execute({
+      gymId: randomUUID(),
+      userId: '1234'
+    });
+
+    expect(checkIn.id).toEqual(expect.any(String));
+  });
+
   it('should not be able to check in twice in the same day', async () => {
       
     vi.setSystemTime(new Date(2022,1, 20, 9, 0, 0));
   
     await sut.execute({
       gymId: randomUUID(),
-      userId: randomUUID()
+      userId: '1234'
     });
   
     await expect(() => sut.execute({
       gymId: randomUUID(),
-      userId: randomUUID()
+      userId: '1234'
     })).rejects.toBeInstanceOf(Error);
   });
 });
