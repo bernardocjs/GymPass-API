@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository';
-import { CheckInUseCase } from '@/use-cases/checki-in';
+import { CheckInUseCase } from '@/use-cases/check-in';
 import { randomUUID } from 'crypto';
 
 let checkInsRepository: InMemoryCheckInsRepository;
