@@ -1,16 +1,23 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository';
 import { CheckInUseCase } from '@/use-cases/check-in';
 import { randomUUID } from 'crypto';
+import { afterEach } from 'vitest';
 
 let checkInsRepository: InMemoryCheckInsRepository;
 let sut: CheckInUseCase;
 
-describe('Authenticate Use Case', () => {
+describe('CheckIn Use Case', () => {
 
   beforeEach(() => {
     checkInsRepository = new InMemoryCheckInsRepository();
     sut = new CheckInUseCase(checkInsRepository);
+  
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should be able to authenticate', async () => {
@@ -21,5 +28,20 @@ describe('Authenticate Use Case', () => {
     });
 
     expect(checkIn.id).toEqual(expect.any(String));
+  });
+
+  it('should not be able to check in twice in the same day', async () => {
+      
+    vi.setSystemTime(new Date(2022,1, 20, 9, 0, 0));
+  
+    await sut.execute({
+      gymId: randomUUID(),
+      userId: randomUUID()
+    });
+  
+    await expect(() => sut.execute({
+      gymId: randomUUID(),
+      userId: randomUUID()
+    })).rejects.toBeInstanceOf(Error);
   });
 });
