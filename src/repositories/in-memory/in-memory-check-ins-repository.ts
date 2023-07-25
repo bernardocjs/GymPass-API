@@ -23,7 +23,11 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     const startOfTheDay = dayjs(date).startOf('day');
     const endOfTheDay = dayjs(date).endOf('day');
     
-    const checkInOnSameDate = this.items.find((checkIn) => checkIn.user_id === userId);
+    const checkInOnSameDate = this.items.find((checkIn) => {
+      const checkInDate = dayjs(checkIn.created_at);
+      const isOnSameDate = checkInDate.isAfter(startOfTheDay) && checkInDate.isBefore(endOfTheDay);
+      return (checkIn.user_id === userId) && isOnSameDate;
+    });
 
     
     if (!checkInOnSameDate) return null;
