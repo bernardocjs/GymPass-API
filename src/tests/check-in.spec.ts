@@ -3,16 +3,29 @@ import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-c
 import { CheckInUseCase } from '@/use-cases/check-in';
 import { randomUUID } from 'crypto';
 import { afterEach } from 'vitest';
+import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository';
+import { Decimal } from '@prisma/client/runtime';
 
 let checkInsRepository: InMemoryCheckInsRepository;
+let gymsRepository: InMemoryGymsRepository;
 let sut: CheckInUseCase;
 
 describe('CheckIn Use Case', () => {
 
   beforeEach(() => {
     checkInsRepository = new InMemoryCheckInsRepository();
-    sut = new CheckInUseCase(checkInsRepository);
+    gymsRepository = new InMemoryGymsRepository();
+    sut = new CheckInUseCase(checkInsRepository, gymsRepository);
   
+    gymsRepository.items.push({
+      id: 'teste',
+      title: 'Academia',
+      latitude: new Decimal(0),
+      longitude: new Decimal(0),
+      description: '',
+      phone: ''
+    });
+
     vi.useFakeTimers();
   });
 
@@ -20,11 +33,13 @@ describe('CheckIn Use Case', () => {
     vi.useRealTimers();
   });
 
-  it('should be able to authenticate', async () => {
+  it('should be able to checkIn', async () => {
 
-    const checkIn = await checkInsRepository.create({
-      gym_id: randomUUID(),
-      user_id: randomUUID()
+    const {checkIn} = await sut.execute({
+      gymId: 'teste',
+      userId: randomUUID(),
+      userLatitude:0,
+      userLongitude:0
     });
 
     expect(checkIn.id).toEqual(expect.any(String));
@@ -35,15 +50,19 @@ describe('CheckIn Use Case', () => {
     vi.setSystemTime(new Date(2022,1, 20, 9, 0, 0));
   
     await sut.execute({
-      gymId: randomUUID(),
-      userId: '1234'
+      gymId: 'teste',
+      userId: '1234',
+      userLatitude:0,
+      userLongitude:0
     });
 
     vi.setSystemTime(new Date(2022,1, 21, 9, 0, 0));
   
     const {checkIn} = await sut.execute({
-      gymId: randomUUID(),
-      userId: '1234'
+      gymId:  'teste',
+      userId: '1234',
+      userLatitude:0,
+      userLongitude:0
     });
 
     expect(checkIn.id).toEqual(expect.any(String));
@@ -54,13 +73,17 @@ describe('CheckIn Use Case', () => {
     vi.setSystemTime(new Date(2022,1, 20, 9, 0, 0));
   
     await sut.execute({
-      gymId: randomUUID(),
-      userId: '1234'
+      gymId:  'teste',
+      userId: '1234',
+      userLatitude:0,
+      userLongitude:0
     });
   
     await expect(() => sut.execute({
-      gymId: randomUUID(),
-      userId: '1234'
+      gymId:  'teste',
+      userId: '1234',
+      userLatitude:0,
+      userLongitude:0
     })).rejects.toBeInstanceOf(Error);
   });
 });
