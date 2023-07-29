@@ -86,4 +86,24 @@ describe('CheckIn Use Case', () => {
       userLongitude:0
     })).rejects.toBeInstanceOf(Error);
   });
+
+  it('should not be able to check in in distant gym', async () => {
+        
+
+    gymsRepository.items.push({
+      id: 'teste2',
+      title: 'Academia',
+      latitude: new Decimal(25),
+      longitude: new Decimal(25),
+      description: '',
+      phone: ''
+    });
+  
+    await expect(() => sut.execute({
+      gymId:  'teste2',
+      userId: '1234',
+      userLatitude:0,
+      userLongitude:0
+    })).rejects.toBeInstanceOf(Error);
+  });
 });
