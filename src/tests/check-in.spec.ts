@@ -5,6 +5,8 @@ import { randomUUID } from 'crypto';
 import { afterEach } from 'vitest';
 import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository';
 import { Decimal } from '@prisma/client/runtime';
+import { MaxDistanceError } from '@/use-cases/errors/max-distance-error';
+import { LimitNumberOfCheckInsError } from '@/use-cases/errors/limit-number-of-ckeckins-error';
 
 let checkInsRepository: InMemoryCheckInsRepository;
 let gymsRepository: InMemoryGymsRepository;
@@ -17,11 +19,11 @@ describe('CheckIn Use Case', () => {
     gymsRepository = new InMemoryGymsRepository();
     sut = new CheckInUseCase(checkInsRepository, gymsRepository);
   
-    gymsRepository.items.push({
+    gymsRepository.create({
       id: 'teste',
       title: 'Academia',
-      latitude: new Decimal(0),
-      longitude: new Decimal(0),
+      latitude: 0,
+      longitude:0,
       description: '',
       phone: ''
     });
@@ -84,7 +86,7 @@ describe('CheckIn Use Case', () => {
       userId: '1234',
       userLatitude:0,
       userLongitude:0
-    })).rejects.toBeInstanceOf(Error);
+    })).rejects.toBeInstanceOf(LimitNumberOfCheckInsError);
   });
 
   it('should not be able to check in in distant gym', async () => {
@@ -104,6 +106,6 @@ describe('CheckIn Use Case', () => {
       userId: '1234',
       userLatitude:0,
       userLongitude:0
-    })).rejects.toBeInstanceOf(Error);
+    })).rejects.toBeInstanceOf(MaxDistanceError);
   });
 });
