@@ -19,10 +19,15 @@ export class InMemoryCheckInsRepository implements CheckInsRepository {
     return checkIn;
   }
 
+  async countByUserId(userId: string) {
+    return this.items.filter((checkIn) => checkIn.user_id === userId).length;
+  }
+
+
   async findManyByUserId(userId: string, page: number) {
     return this.items
       .filter((checkIn) => checkIn.user_id === userId)
-      .slice((page - 1) * 20, page * 20)
+      .slice((page - 1) * 20, page * 20);
   }
 
   async findByUserIdOnDate(userId: string, date: Date) {
