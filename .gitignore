@@ -5,3 +5,6 @@ build
 
 #local env files
 .env
+
+#tests logs
+coverage
