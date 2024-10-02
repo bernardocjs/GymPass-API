@@ -41,6 +41,13 @@ jobs:
     needs: [run-unit-tests, build]
 
     steps:
+      - name: Install mailutils
+        run: sudo apt-get install -y mailutils
+
       - name: Send Email
         run: |
+          if [ -z "${{ secrets.EMAIL_RECIPIENT }}" ]; then
+            echo "Error: EMAIL_RECIPIENT is not set"
+            exit 1
+          fi
           echo "Pipeline Executado com Sucesso" | mail -s "Notificação de Pipeline" ${{ secrets.EMAIL_RECIPIENT }}
