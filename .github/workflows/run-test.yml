@@ -49,21 +49,16 @@ jobs:
         - run: npm ci
     
         - run: npm run build
-  
+
   send-email:
-    name: Send Email Notification
+    name: Send Email
     runs-on: ubuntu-latest
-    needs: [run-unit-tests, build]
-
     steps:
-      - name: Install mailutils
-        run: sudo apt-get install -y mailutils
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Send Email
-        run: |
-          if [ -z "${{ secrets.EMAIL_RECIPIENT }}" ]; then
-            echo "Error: EMAIL_RECIPIENT is not set"
-            exit 1
-          fi
-          echo "Pipeline Executado com Sucesso" | mail -s "Notificação de Pipeline" ${{ secrets.EMAIL_RECIPIENT }}
+      - name: Run send-mail script
+        run: sh scripts/send-mail.sh
+        env:
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
 
