@@ -8,5 +8,9 @@ export default defineConfig({
     outputFile: {
       html: './reports/test-report.html',
     },
+    coverage: {
+      reporter: ['text', 'json'],
+      reportOnFailure: true,
+    }
   },
 });

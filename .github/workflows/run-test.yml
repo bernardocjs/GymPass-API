@@ -17,7 +17,22 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run test
+      - name: Run Tests
+        run: npm test
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: ./coverage
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: ./reports/
 
   build:
       name: Build Project
@@ -51,3 +66,4 @@ jobs:
             exit 1
           fi
           echo "Pipeline Executado com Sucesso" | mail -s "Notificação de Pipeline" ${{ secrets.EMAIL_RECIPIENT }}
+
